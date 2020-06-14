@@ -1,57 +1,177 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Data;
-using System.Data.SqlClient;
-using Customer_Details.Models;
-using System.Configuration;
 
-namespace Customer_Details.Controllers
+namespace WebApplication1.Controllers
 {
-    public class AddCustomerController : Controller
+    public class CustomerController : Controller
     {
-        // GET: AddCustomer
+
+        [HttpGet]
+        // GET: Customer
         public ActionResult Index()
         {
+            string maincon = ConfigurationManager.ConnectionStrings["myConnection"].ConnectionString;
+            SqlConnection con = new SqlConnection(maincon);
+
+            string sqlquery = "select * from STATE";
+            SqlCommand com = new SqlCommand(sqlquery, con);
+            SqlDataAdapter da = new SqlDataAdapter(com);
+
+            con.Open();
+
+            DataSet ds = new DataSet();
+            da.Fill(ds);
+
+
+            ViewBag.statename = ds.Tables[0];
+            List<SelectListItem> getstatename = new List<SelectListItem>();
+
+
+            foreach (System.Data.DataRow dr in ViewBag.statename.Rows)
+            {
+                getstatename.Add(new SelectListItem { Text = @dr["state_name"].ToString(), Value = @dr["state_id"].ToString() });
+
+                ViewBag.state = getstatename;
+            }
+
+
+
+
+
+            string sqlquery1 = "select * from GENDER";
+            SqlCommand com1 = new SqlCommand(sqlquery1, con);
+            SqlDataAdapter da1 = new SqlDataAdapter(com1);
+            DataSet ds1 = new DataSet();
+            da1.Fill(ds1);
+            ViewBag.gendername = ds1.Tables[0];
+            List<SelectListItem> getgendername = new List<SelectListItem>();
+
+            foreach (System.Data.DataRow dr in ViewBag.gendername.Rows)
+            {
+                getgendername.Add(new SelectListItem { Text = @dr["gender_"].ToString(), Value = @dr["gender_id"].ToString() });
+
+                ViewBag.gender_ = getgendername;
+            }
+
+
+            con.Close();
             return View();
         }
-       
-        
-        public ActionResult Create(Customer cd)
+
+        [HttpPost]
+        public ActionResult Index(FormCollection formdata)
         {
+            string NRI_DATA = formdata["nri_flag"].ToString();
+            string Tobacco = formdata["tobbaco_user_flag"].ToString();
+
+            Response.Write("Form = " + NRI_DATA + "  " + Tobacco);
+
+            if (NRI_DATA == "true,false")
+            {
+                NRI_DATA = "1";
+                Response.Write("NRI = " + NRI_DATA);
+
+            }
+            else if (NRI_DATA == "false")
+            {
+                NRI_DATA = "0";
+            }
+
+            if (Tobacco == "true,false")
+            {
+                Tobacco = "1";
+                Response.Write("NRI = " + Tobacco);
+
+            }
+            else if (Tobacco == "false")
+            {
+                Tobacco = "0";
+            }
+
+            Response.Write("Form = " + NRI_DATA + "  " + Tobacco);
+
+
             string maincon = ConfigurationManager.ConnectionStrings["Myconnection"].ConnectionString;
             SqlConnection con = new SqlConnection(maincon);
-            string query = "Insert Into CUSTOMER (customer_id,first_name,last_name,gender,date_of_birth,nri_flag,tobacco_user_flag,Address_Line1,Address_Line2,State,City,email_id,Nominee_Name) " +
-                "values (@customer_id,@first_name,@last_name,@gender,@date_of_birth,@nri_flag,@tobacco_user_flag,@Address_Line1,@Address_Line2,@State,@City,@email_id,@Nominee_Name)";
+
+            string sqlquery = "select * from STATE";
+            SqlCommand com = new SqlCommand(sqlquery, con);
+            SqlDataAdapter da = new SqlDataAdapter(com);
+
             con.Open();
-            SqlCommand com = new SqlCommand(query, con);
-            com.Parameters.AddWithValue("@customer_id", cd.Customer_id);
-           
-            if (String.IsNullOrEmpty(cd.first_name))
-                //{
-                //    com.Parameters.AddWithValue("@first_name", DBNull.Value);
-                //}
-                //else
-                com.Parameters.AddWithValue("@first_name", cd.first_name);
+
+            DataSet ds = new DataSet();
+            da.Fill(ds);
 
 
-            com.Parameters.AddWithValue("@last_name", cd.last_name);
-            com.Parameters.AddWithValue("@gender", cd.gender);
-            com.Parameters.AddWithValue("@date_of_birth", cd.date_of_birth);
-            com.Parameters.AddWithValue("@nri_flag", cd.nri_flag);
-            com.Parameters.AddWithValue("@tobacco_user_flag", cd.tobbaco_user_flag);
-            com.Parameters.AddWithValue("@Address_Line1", cd.Address_Line1);
-            com.Parameters.AddWithValue("@Address_Line2", cd.Address_Line2);
-            com.Parameters.AddWithValue("@State", cd.State);
-            com.Parameters.AddWithValue("@City", cd.City);
-            com.Parameters.AddWithValue("@email_id", cd.Email_Id);
-            com.Parameters.AddWithValue("@Nominee_name", cd.Nominee_name);
-            com.ExecuteNonQuery();
+            ViewBag.statename = ds.Tables[0];
+            List<SelectListItem> getstatename = new List<SelectListItem>();
+
+
+            foreach (System.Data.DataRow dr in ViewBag.statename.Rows)
+            {
+                getstatename.Add(new SelectListItem { Text = @dr["state_name"].ToString(), Value = @dr["state_id"].ToString() });
+
+                ViewBag.state = getstatename;
+            }
+
+            string sqlquery1 = "select * from GENDER";
+            SqlCommand com1 = new SqlCommand(sqlquery1, con);
+            SqlDataAdapter da1 = new SqlDataAdapter(com1);
+            DataSet ds1 = new DataSet();
+            da1.Fill(ds1);
+            ViewBag.gendername = ds1.Tables[0];
+            List<SelectListItem> getgendername = new List<SelectListItem>();
+
+            foreach (System.Data.DataRow dr in ViewBag.gendername.Rows)
+            {
+                getgendername.Add(new SelectListItem { Text = @dr["gender_"].ToString(), Value = @dr["gender_id"].ToString() });
+
+                ViewBag.gender_ = getgendername;
+            }
+
+            SqlCommand command = new SqlCommand("spADDCUSTOMER", con);
+            command.CommandType = CommandType.StoredProcedure;
+
+
+            command.Parameters.AddWithValue("@first_name", formdata["first_name"]);
+            command.Parameters.AddWithValue("@last_name", formdata["last_name"]);
+            command.Parameters.AddWithValue("@gender_id", Convert.ToInt32(formdata["gender_"]));
+            command.Parameters.AddWithValue("@date_of_birth", Convert.ToDateTime(formdata["date_of_birth"]));
+            command.Parameters.AddWithValue("@nri_flag", NRI_DATA);
+            command.Parameters.AddWithValue("@tobacco_user_flag", Tobacco);
+            command.Parameters.AddWithValue("@email_id", formdata["Email_id"]);
+
+            command.Parameters.AddWithValue("@address_1", formdata["Address_Line1"]);
+            command.Parameters.AddWithValue("@address_2", formdata["Address_Line1"]);
+            command.Parameters.AddWithValue("@state_id", Convert.ToInt32(formdata["state"]));
+
+            command.Parameters.AddWithValue("@phone_number", Convert.ToInt64(formdata["Phone_Number"]));
+            command.Parameters.AddWithValue("@Nominee_name", formdata["Nominee_name"]);
+            command.ExecuteNonQuery();
+
+            TempData["Phone_Number"] = Convert.ToInt64(formdata["Phone_Number"]);
+
+          
+
+
             con.Close();
-            ViewData["Message"] = "Customer details added Successfully";
-            return View();
+            ViewData["Message"] = "Details saved Successfully";
+
+
+
+            return RedirectToAction("Index", "Policy");
         }
+
+
+
     }
 }
+

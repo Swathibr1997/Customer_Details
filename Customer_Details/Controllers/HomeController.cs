@@ -15,7 +15,6 @@ namespace Customer_Details.Controllers
 
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
 
             return View();
         }
@@ -24,6 +23,11 @@ namespace Customer_Details.Controllers
         {
             ViewBag.Message = "Your contact page.";
 
+            return View();
+        }
+
+        public ActionResult WhyThisPlan()
+        {
             return View();
         }
     }
