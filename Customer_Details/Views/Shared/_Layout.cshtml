@@ -19,7 +19,7 @@
                 </button>
                 @*@Html.ActionLink("Term Insurance", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })*@
             </div>
-            <div class="navbar-collapse collapse">
+            <div class="navbar-collapse collapse" >
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("HOME", "Index", "Home")</li>
                     <li>@Html.ActionLink("WHY TERM PLAN", "About", "Home")</li>
@@ -33,7 +33,7 @@
     <div class="container body-content">
         @RenderBody()
         <hr />
-        <footer>
+        <footer style="text-align: center">
             <p>&copy; @DateTime.Now.Year - Term Insurance Application</p>
         </footer>
     </div>
